@@ -9,8 +9,20 @@ body{
     background-color: black;
     color: white;
 }
-
+/* 
 .menu_items_container{
     display: flex;
     align-items: center;
+} */
+
+.list_items{
+    display: flex;
+    align-items: center;
+    
+}
+
+.list_items li{
+    cursor: pointer;
+    margin: 0 20px;
+    list-style: none;
 }
