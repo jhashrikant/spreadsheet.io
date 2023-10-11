@@ -1,0 +1,16 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.menu_navbar{
+    display: flex;
+    align-items: center;
+    background-color: black;
+    color: white;
+}
+
+.menu_items_container{
+    display: flex;
+    align-items: center;
+}
