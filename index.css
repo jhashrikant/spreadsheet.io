@@ -1,28 +1,280 @@
-body{
+* {
+    box-sizing: border-box;
+}
+
+body {
     margin: 0;
     padding: 0;
 }
 
-.menu_navbar{
+.menu_navbar {
     display: flex;
     align-items: center;
-    background-color: black;
+    background-color: rgb(33, 140, 116);
     color: white;
 }
+
 /* 
 .menu_items_container{
     display: flex;
     align-items: center;
 } */
 
-.list_items{
+/* .menu_navbar {
     display: flex;
     align-items: center;
-    
+} */
+
+.menu_items_container {}
+
+.list_items {
+    display: flex;
+    align-items: center;
+
 }
 
-.list_items li{
+.list_items li {
     cursor: pointer;
     margin: 0 20px;
     list-style: none;
 }
+
+#grid__container {
+    /* background-color: blueviolet; */
+    width: auto;
+
+}
+
+/* .grid{
+    overflow: visible;
+} */
+
+#row {
+    display: grid;
+    grid-template-columns: repeat(26, 6rem);
+
+}
+
+.cell {
+    /* height: 2rem; */
+    height: 1.5rem;
+    width: 6rem;
+    border: 1px solid #dfe4ea;
+    outline: none;
+}
+
+#row-count-grid {
+    display: grid;
+    grid-template-columns: repeat(26, 6rem);
+}
+
+
+
+/* .rowNumbers{
+    border: 1px solid #dfe4ea;
+} */
+
+/* .dummybox{
+    display: flex;
+    justify-content: center;
+    background-color: lightslategray;
+    height: 2rem;
+    width: 2rem;
+    position: fixed;
+    
+} */
+
+
+
+#grid__container {
+    display: grid;
+}
+
+#col_count_grid {
+    display: inline-grid;
+    grid-template-rows: repeat(100, 2rem);
+
+}
+
+
+#parent_grid_fornumbers {
+    display: flex;
+    /* overflow: scroll; */
+    position: relative;
+    top: 2rem;
+}
+
+#Parent_flex {
+    display: flex;
+    position: fixed;
+    z-index: 100;
+}
+
+/* #letters{
+    
+    left: 2rem;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+} */
+
+/* #parent_grid_fornumbers{
+    display: flex;
+} */
+
+/* #numbers{
+    display: flex;
+    flex-direction: column;
+   
+    position: fixed;
+} */
+
+
+#blank_cells {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    left: 2rem;
+}
+
+.rowELement {
+    display: grid;
+    grid-template-columns: repeat(26 ,6rem);
+    /* display: flex; */
+    /* height: 2rem; */
+    /* height: 1.5rem; */
+}
+
+.navbar {
+    line-height: 0;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    height: 3rem;
+    background-color: #17765f;
+}
+
+.list_items_flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.list_items_flex li {
+    padding: 10px;
+    text-decoration: none;
+    list-style: none;
+    cursor: pointer;
+}
+
+#grid {
+    position: relative;
+    top: 3rem;
+    height: calc(100vh - 3rem);
+    overflow: scroll;
+}
+
+/* neww */
+
+
+#fixedContent {
+    position: absolute;
+    top: 2rem;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#numbers {
+    position: sticky;
+    left: 0;
+    top: 2rem;
+    /* z-index: 1;   removed z-index was not able to edit the content */
+
+    /* z-index: 100;
+    top: 5rem; */
+}
+
+.dummyBox {
+    height: 2rem;
+    width: 2rem;
+    background-color: lightslategray;
+    border: 1px solid #dfe4ea;
+    position: fixed;
+    top: 3rem;
+    z-index: 100;
+}
+
+#scrollableContent {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0rem;
+    left: 2rem;
+}
+
+.rowNumbers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    border: 1px solid #dfe4ea;
+    /* height: 2rem; */
+    height: 1.5rem;
+    width: 2rem;
+    background-color: rgb(177, 191, 205);
+}
+
+.cellbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    height: 2rem;
+    width: 6rem;
+    border: 1px solid #dfe4ea;
+    outline: none;
+    background-color: rgb(177, 191, 205);
+}
+
+.highlight-col {
+    background-color: rgb(120, 142, 166); 
+}
+
+.highlight-row{
+    background-color: rgb(120, 142, 166); 
+}
+
+#letters {
+    display: grid;
+    grid-template-columns: repeat(26, 6rem);
+    position: sticky;
+    top: 0;
+    left: 2rem;
+    z-index: 1;
+    /* left: 2rem; */
+}
+
+#emptygridsParent {
+    position: relative;
+    /* left: 2rem; */
+}
+
+
+.border{
+    border: 2px solid blue;
+}
+
+/* .addrows{
+    background-color: antiquewhite;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10;
+    margin: 10px;
+    
+   
+} */
