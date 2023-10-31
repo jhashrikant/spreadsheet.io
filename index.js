@@ -102,7 +102,7 @@ function selectMultipleCells(cell) {
     cell.addEventListener('mouseenter', (e) => {
         if (isSelecting) {
             endCell = cell;
-            runloop(startCell, endCell);
+            getSelectedCells(startCell, endCell);
         }
     });
 
@@ -114,7 +114,7 @@ function selectMultipleCells(cell) {
 }
 
 
-function runloop(startCell, endCell) {
+function getSelectedCells(startCell, endCell) {
     console.log(`startCell`, startCell)
     console.log(`endCell`, endCell);
     let startrowid = parseInt(startCell.getAttribute('rowid')); //1
