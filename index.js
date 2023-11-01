@@ -22,6 +22,7 @@ let startCell, endCell;
 // let prevfocused = []
 let prevSelectedCells = []; // Keep track of previously selected cells
 let prevselectedbg = [];
+let prevselectedBorders = []
 
 
 
@@ -75,14 +76,19 @@ function createcell(row, col) {
 function selectMultipleCells(cell) {
     cell.addEventListener('mousedown', (e) => {
         isSelecting = true;
-        // if (prevfocusedCell) prevfocusedCell.classList.remove('border');
+        if (prevselectedBorders) {
+            prevselectedBorders.forEach((borderCell) => {
+                borderCell.classList.remove('border-top', 'border-right', 'border-left', 'border-bottom')
+            });
+        }
+        if (prevfocusedCell) prevfocusedCell.classList.remove('border');
         if (prevHighlightedRow) {
             prevHighlightedRow.classList.remove('highlight-row');
         }
         if (prevHighlightedColumn) {
             prevHighlightedColumn.classList.remove('highlight-col');
         }
-        // console.log(prevSelectedCells)
+        
         if (prevSelectedCells) {
             prevSelectedCells.forEach((cells) => {
                 cells.classList.remove('background_highlight');
@@ -115,32 +121,38 @@ function selectMultipleCells(cell) {
 }
 
 function addBordersToSelectedCells(startCell, endCell) {
-    let startrowid = parseInt(startCell.getAttribute('rowid')); 
-    let endrowid = parseInt(endCell.getAttribute('rowid')); 
-    let startcolid = parseInt(startCell.getAttribute('colid')) 
-    let endcolid = parseInt(endCell.getAttribute('colid')); 
+    if (startCell !== endCell) {
+        let startrowid = parseInt(startCell.getAttribute('rowid'));
+        let endrowid = parseInt(endCell.getAttribute('rowid'));
+        let startcolid = parseInt(startCell.getAttribute('colid'))
+        let endcolid = parseInt(endCell.getAttribute('colid'));
 
-    for (let i = startrowid; i <= endrowid; i++) {
-        //access the row 
-        const Allrows = document.getElementsByClassName("rowELement");
-        const row = Allrows[i - 1];
-        const col = row.querySelectorAll('.cell');
+        for (let i = startrowid; i <= endrowid; i++) {
+            //access the row 
+            const Allrows = document.getElementsByClassName("rowELement");
+            const row = Allrows[i - 1];
+            const col = row.querySelectorAll('.cell');
 
-        for (let j = startcolid; j <= endcolid; j++) {
-            if (i === startrowid) {
-                col[j - 1].classList.add('border-top');
-            }
+            for (let j = startcolid; j <= endcolid; j++) {
+                if (i === startrowid) {
+                    col[j - 1].classList.add('border-top');
+                    prevselectedBorders.push(col[j - 1]) ////push the element in array so that next time this can be removed
+                }
 
-            if (i === endrowid) {
-                col[j - 1].classList.add('border-bottom');
-            }
+                if (i === endrowid) {
+                    col[j - 1].classList.add('border-bottom');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j - 1])
+                }
 
-            if (j === startcolid) {
-                col[j - 1].classList.add('border-left');
-            }
+                if (j === startcolid) {
+                    col[j - 1].classList.add('border-left');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j - 1])
+                }
 
-            if (j === endcolid) {
-                col[j - 1].classList.add('border-right');
+                if (j === endcolid) {
+                    col[j - 1].classList.add('border-right');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j - 1])
+                }
             }
         }
     }
