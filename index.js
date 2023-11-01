@@ -109,12 +109,12 @@ function selectMultipleCells(cell) {
     cell.addEventListener('mouseup', (e) => {
         isSelecting = false;
         console.log(endCell);
-        addBordersToSelection(startCell, endCell);
+        addBordersToSelectedCells(startCell, endCell);
 
     });
 }
 
-function addBordersToSelection(startCell, endCell) {
+function addBordersToSelectedCells(startCell, endCell) {
     let startrowid = parseInt(startCell.getAttribute('rowid')); 
     let endrowid = parseInt(endCell.getAttribute('rowid')); 
     let startcolid = parseInt(startCell.getAttribute('colid')) 
