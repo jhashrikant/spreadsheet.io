@@ -67,7 +67,6 @@ function createcell(row, col) {
 
     cell.addEventListener('click', () => handlecellClick(cell, row, col, true, true));
 
-
     selectMultipleCells(cell);
 
     return cell;
@@ -100,21 +99,55 @@ function selectMultipleCells(cell) {
     });
 
     cell.addEventListener('mouseenter', (e) => {
+        // isSelecting = true
         if (isSelecting) {
-            endCell = cell;
-            getSelectedCells(startCell, endCell);
+            endCell = cell
+            highlightSelectedCells(startCell, endCell);
         }
     });
 
     cell.addEventListener('mouseup', (e) => {
         isSelecting = false;
         console.log(endCell);
+        addBordersToSelection(startCell, endCell);
 
     });
 }
 
+function addBordersToSelection(startCell, endCell) {
+    let startrowid = parseInt(startCell.getAttribute('rowid')); 
+    let endrowid = parseInt(endCell.getAttribute('rowid')); 
+    let startcolid = parseInt(startCell.getAttribute('colid')) 
+    let endcolid = parseInt(endCell.getAttribute('colid')); 
 
-function getSelectedCells(startCell, endCell) {
+    for (let i = startrowid; i <= endrowid; i++) {
+        //access the row 
+        const Allrows = document.getElementsByClassName("rowELement");
+        const row = Allrows[i - 1];
+        const col = row.querySelectorAll('.cell');
+
+        for (let j = startcolid; j <= endcolid; j++) {
+            if (i === startrowid) {
+                col[j - 1].classList.add('border-top');
+            }
+
+            if (i === endrowid) {
+                col[j - 1].classList.add('border-bottom');
+            }
+
+            if (j === startcolid) {
+                col[j - 1].classList.add('border-left');
+            }
+
+            if (j === endcolid) {
+                col[j - 1].classList.add('border-right');
+            }
+        }
+    }
+}
+
+
+function highlightSelectedCells(startCell, endCell) {
     console.log(`startCell`, startCell)
     console.log(`endCell`, endCell);
     let startrowid = parseInt(startCell.getAttribute('rowid')); //1
@@ -128,22 +161,18 @@ function getSelectedCells(startCell, endCell) {
 
     for (let i = startrowid; i <= endrowid; i++) {
         //access the row 
-        const row = document.getElementsByClassName("rowELement")
-        const val = row[i - 1];
-        const col = val.querySelectorAll('.cell');
+        const Allrows = document.getElementsByClassName("rowELement")
+        const row = Allrows[i - 1];
+        const col = row.querySelectorAll('.cell');
+
         for (let j = startcolid; j <= endcolid; j++) {
-            // if (i === startrowid) {
-            //     col[j - 1].classList.add('border-top');
-            // }
             col[j - 1].classList.add('background_highlight'); //access the cell 
-            // if (j === endcolid) {
-            //     col[j - 1].classList.add('border-right');
-            // }
-            colorbg(i, j); //on every iteration loop will run and call this fucntion wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+            colorbg(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
             prevSelectedCells.push(col[j - 1])//push all the cells which need to be wiped out in next iteration
         }
     }
 }
+
 
 
 function colorbg(i, j) {
@@ -161,7 +190,7 @@ function colorbg(i, j) {
     prevHighlightedColumn = columnTohighlight
 
     //push the elements as prev highlighted to remove it on next time when we click and drag
-    prevselectedbg.push(rowtohighlight, columnTohighlight)
+    prevselectedbg.push(rowtohighlight, columnTohighlight);
     // console.log('line 167', prevselectedbg)
 }
 
