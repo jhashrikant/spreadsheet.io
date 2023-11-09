@@ -6,6 +6,9 @@ let prevHighlightedColumn;
 let prevHighlightedRow;
 let prevfocusedCell;
 
+let currentRow;
+let currentCol;
+
 const scrollableContent = document.getElementById('scrollableContent');
 
 const numbers = document.getElementById('numbers');
@@ -25,7 +28,9 @@ let prevselectedbg = [];
 let prevselectedBorders = []
 
 
-
+document.addEventListener('keydown', (event) => {
+    handleKeyboardClick(event, currentRow, currentCol); //fucntion runs when keyboard buttons are pressed
+})
 
 //render letters from A to Z
 function renderLetters() {
@@ -55,51 +60,46 @@ renderNumbers();  //invoke the function
 
 function createcell(row, col) {
     const cell = document.createElement('div');
-    cell.classList.add('cell')
-    cell.setAttribute("contenteditable", "true");
+    cell.classList.add('cell');
     cell.setAttribute("spellcheck", "false");
 
     // Attributes for cell identification
-    cell.setAttribute("rowid", row + 1);
-    cell.setAttribute("colid", col + 1);
+    cell.setAttribute("rowid", row);
+    cell.setAttribute("colid", col);
     cell.innerText = "";
 
-    cell.addEventListener('keydown', (event) => handleKeyboardClick(event, row, col)); //fucntion runs when keyboard buttons are pressed
+    // cell.addEventListener('keydown', (event) => {
+    //     handleKeyboardClick(event, row, col); //fucntion runs when keyboard buttons are pressed
+    // });
 
-    cell.addEventListener('click', () => handlecellClick(cell, row, col, true, true));
+    cell.addEventListener('click', (event) => {
+        console.log('line 74', event.target)
+        const x = event.target
+        console.log(x.getAttribute('rowid'))
+        console.log(x.getAttribute('colid'))
+        currentRow = x.getAttribute('rowid')
+        currentCol = x.getAttribute('colid')
+        console.log(row, col)
+        handlecellClick(cell, row, col, true, true);
+    })
+
+    cell.addEventListener('dblclick', () => {
+        cell.setAttribute("contenteditable", "true");
+        cell.focus()
+    })
 
     selectMultipleCells(cell);
-
     return cell;
 }
 
+
+
 function selectMultipleCells(cell) {
+    console.log('line 98',cell)
     cell.addEventListener('mousedown', (e) => {
+        cell.classList.add('border')
         isSelecting = true;
-        if (prevselectedBorders) {
-            prevselectedBorders.forEach((borderCell) => {
-                borderCell.classList.remove('border-top', 'border-right', 'border-left', 'border-bottom')
-            });
-        }
-        if (prevfocusedCell) prevfocusedCell.classList.remove('border');
-        if (prevHighlightedRow) {
-            prevHighlightedRow.classList.remove('highlight-row');
-        }
-        if (prevHighlightedColumn) {
-            prevHighlightedColumn.classList.remove('highlight-col');
-        }
-        
-        if (prevSelectedCells) {
-            prevSelectedCells.forEach((cells) => {
-                cells.classList.remove('background_highlight');
-            });
-        }
-        if (prevselectedbg) {
-            prevselectedbg.forEach((bg) => {
-                bg.classList.remove('highlight-row');
-                bg.classList.remove('highlight-col');
-            });
-        }
+        removeprevSelections();
         startCell = cell;
         endCell = cell;
     });
@@ -114,13 +114,40 @@ function selectMultipleCells(cell) {
 
     cell.addEventListener('mouseup', (e) => {
         isSelecting = false;
-        console.log(endCell);
+        // console.log(endCell);
         addBordersToSelectedCells(startCell, endCell);
-
     });
 }
 
+function removeprevSelections() {
+    if (prevselectedBorders) {
+        prevselectedBorders.forEach((borderCell) => {
+            borderCell.classList.remove('border-top', 'border-right', 'border-left', 'border-bottom')
+        });
+    }
+    // if (prevfocusedCell) prevfocusedCell.classList.remove('border');
+    if (prevHighlightedRow) {
+        prevHighlightedRow.classList.remove('highlight-row');
+    }
+    if (prevHighlightedColumn) {
+        prevHighlightedColumn.classList.remove('highlight-col');
+    }
+
+    if (prevSelectedCells) {
+        prevSelectedCells.forEach((cells) => {
+            cells.classList.remove('background_highlight');
+        });
+    }
+    if (prevselectedbg) {
+        prevselectedbg.forEach((bg) => {
+            bg.classList.remove('highlight-row');
+            bg.classList.remove('highlight-col');
+        });
+    }
+}
+
 function addBordersToSelectedCells(startCell, endCell) {
+    console.log(startCell ,endCell);
     if (startCell !== endCell) {
         let startrowid = parseInt(startCell.getAttribute('rowid'));
         let endrowid = parseInt(endCell.getAttribute('rowid'));
@@ -130,33 +157,35 @@ function addBordersToSelectedCells(startCell, endCell) {
         for (let i = startrowid; i <= endrowid; i++) {
             //access the row 
             const Allrows = document.getElementsByClassName("rowELement");
-            const row = Allrows[i - 1];
+            const row = Allrows[i];
             const col = row.querySelectorAll('.cell');
 
             for (let j = startcolid; j <= endcolid; j++) {
                 if (i === startrowid) {
-                    col[j - 1].classList.add('border-top');
-                    prevselectedBorders.push(col[j - 1]) ////push the element in array so that next time this can be removed
+                    col[j].classList.add('border-top');
+                    prevselectedBorders.push(col[j]) ////push the element in array so that next time this can be removed
                 }
 
                 if (i === endrowid) {
-                    col[j - 1].classList.add('border-bottom');//push the element in array so that next time this can be removed
-                    prevselectedBorders.push(col[j - 1])
+                    col[j].classList.add('border-bottom');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j])
                 }
 
                 if (j === startcolid) {
-                    col[j - 1].classList.add('border-left');//push the element in array so that next time this can be removed
-                    prevselectedBorders.push(col[j - 1])
+                    col[j].classList.add('border-left');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j])
                 }
 
                 if (j === endcolid) {
-                    col[j - 1].classList.add('border-right');//push the element in array so that next time this can be removed
-                    prevselectedBorders.push(col[j - 1])
+                    col[j].classList.add('border-right');//push the element in array so that next time this can be removed
+                    prevselectedBorders.push(col[j])
                 }
             }
         }
     }
 }
+
+
 
 
 function highlightSelectedCells(startCell, endCell) {
@@ -174,30 +203,30 @@ function highlightSelectedCells(startCell, endCell) {
     for (let i = startrowid; i <= endrowid; i++) {
         //access the row 
         const Allrows = document.getElementsByClassName("rowELement")
-        const row = Allrows[i - 1];
+        const row = Allrows[i];
         const col = row.querySelectorAll('.cell');
 
         for (let j = startcolid; j <= endcolid; j++) {
-            col[j - 1].classList.add('background_highlight'); //access the cell 
-            colorbg(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
-            prevSelectedCells.push(col[j - 1])//push all the cells which need to be wiped out in next iteration
+            col[j].classList.add('background_highlight'); //access the cell 
+            highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+            prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
         }
     }
 }
 
 
 
-function colorbg(i, j) {
+function highLightCorrespondinglettersandNumbers(i, j) {
 
     //take out the row which u wnt to highlight
     const numberchildrens = numbers.children
-    const rowtohighlight = numberchildrens[i - 1];
+    const rowtohighlight = numberchildrens[i];
     rowtohighlight.classList.add('highlight-row');
     prevHighlightedRow = rowtohighlight;
 
     //take out the col which u wan to highlight
     const lettersChildren = letters.children
-    const columnTohighlight = lettersChildren[j - 1];
+    const columnTohighlight = lettersChildren[j];
     columnTohighlight.classList.add('highlight-col');
     prevHighlightedColumn = columnTohighlight
 
@@ -232,14 +261,18 @@ function handlecellClick(cell, row, col, highlightrow, hightlightcolumn) {
 
 
 function setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn) {
+
     if (prevfocusedCell) {
+        console.log(prevfocusedCell)
         prevfocusedCell.classList.remove('border');
         prevfocusedCell.classList.remove('background_highlight') //remove the highlight bg color when we click on different cell
     }
     cell.classList.add('border');
+    console.log(cell);
     cell.focus();
 
 
+    // code to highlisht the coresponding letters and numbers
     if (highlightrow) {
         if (prevHighlightedRow) {
             prevHighlightedRow.classList.remove('highlight-row');
@@ -260,11 +293,15 @@ function setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn) {
         prevHighlightedColumn = columnTohighlight
     }
     prevfocusedCell = cell;
-    console.log(`clicked on  row ${row} and col ${col}`);
+    //added this two lines of code so that we get the updated row and col when do arrow down ,up and prev it was fetching the same global row can col which was 1 when first time clciked and fetch the correct cell based on row and col
+    currentRow = cell.getAttribute('rowid');
+    currentCol = cell.getAttribute('colid');
+    // console.log(`clicked on  row ${row} and col ${col}`);
 }
 
 
 function handleKeyboardClick(event, row, col) {
+    console.log(row, col)
     let nextcell;
     let currentRow;
     let nextrow;
@@ -272,6 +309,7 @@ function handleKeyboardClick(event, row, col) {
     switch (event.key) {
         case 'Enter':
             event.preventDefault();
+            console.log(prevfocusedCell)
             currentRow = prevfocusedCell.parentElement;
             nextrow = currentRow.nextElementSibling //get the next row in which cells need to focus
 
@@ -279,6 +317,7 @@ function handleKeyboardClick(event, row, col) {
                 const cellsincurentRow = nextrow.querySelectorAll('.cell'); //get all the cells in the row 
                 if (cellsincurentRow) {
                     const currentelementToFocus = cellsincurentRow[col] //focus on the cell
+                    console.log(currentelementToFocus)
                     setFocusAndHighlight(currentelementToFocus, ++row, col, true, false);
                 }
             }
@@ -315,7 +354,11 @@ function handleKeyboardClick(event, row, col) {
 
         case 'ArrowDown':
             event.preventDefault();
+            console.log(prevfocusedCell)
+            console.log('col', currentCol)
+            console.log('row', currentRow);
             currentRow = prevfocusedCell.parentElement
+            console.log(currentRow);
             nextrow = currentRow.nextElementSibling
             console.log(nextrow);
 
@@ -323,6 +366,8 @@ function handleKeyboardClick(event, row, col) {
                 const cellsincurentRow = nextrow.querySelectorAll('.cell');
                 if (cellsincurentRow) {
                     const elementTofocus = cellsincurentRow[col];
+                    console.log(col)
+                    console.log(elementTofocus)
                     setFocusAndHighlight(elementTofocus, ++row, col, true, false);
                 }
             }

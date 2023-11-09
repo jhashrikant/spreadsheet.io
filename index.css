@@ -272,17 +272,17 @@ body {
 }
 
 .border-top{
-    border-top: 2px solid blue;
+    border-top: 1.5px solid blue;
 }
 
 .border-right{
-    border-right: 2px solid blue;
+    border-right: 1.5px solid blue;
 }
 
 .border-bottom {
-    border-bottom: 1px solid blue;
+    border-bottom: 1.5px solid blue;
 }
 
 .border-left{
-    border-left: 1px solid blue;
+    border-left: 1.5px solid blue;
 }
