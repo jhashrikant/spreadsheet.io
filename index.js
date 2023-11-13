@@ -30,7 +30,7 @@ let prevselectedBorders = []
 
 document.addEventListener('keydown', (event) => {
     handleKeyboardClick(event, currentRow, currentCol); //fucntion runs when keyboard buttons are pressed
-})
+});
 
 //render letters from A to Z
 function renderLetters() {
@@ -86,18 +86,20 @@ function createcell(row, col) {
     cell.addEventListener('dblclick', () => {
         cell.setAttribute("contenteditable", "true");
         cell.focus()
-    })
+    });
 
     selectMultipleCells(cell);
     return cell;
 }
 
 
-
 function selectMultipleCells(cell) {
-    console.log('line 98',cell)
-    cell.addEventListener('mousedown', (e) => {
-        cell.classList.add('border')
+    // console.log('line 98',cell)
+    // console.log(cell.getAttribute('rowid'));
+    // console.log(cell.getAttribute('colid'));
+    cell.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        // cell.classList.add('border')
         isSelecting = true;
         removeprevSelections();
         startCell = cell;
@@ -112,9 +114,12 @@ function selectMultipleCells(cell) {
         }
     });
 
+
+
     cell.addEventListener('mouseup', (e) => {
         isSelecting = false;
         // console.log(endCell);
+
         addBordersToSelectedCells(startCell, endCell);
     });
 }
@@ -147,7 +152,7 @@ function removeprevSelections() {
 }
 
 function addBordersToSelectedCells(startCell, endCell) {
-    console.log(startCell ,endCell);
+    console.log(startCell, endCell);
     if (startCell !== endCell) {
         let startrowid = parseInt(startCell.getAttribute('rowid'));
         let endrowid = parseInt(endCell.getAttribute('rowid'));
@@ -189,30 +194,121 @@ function addBordersToSelectedCells(startCell, endCell) {
 
 
 function highlightSelectedCells(startCell, endCell) {
+    console.log('function runs');
     console.log(`startCell`, startCell)
     console.log(`endCell`, endCell);
-    let startrowid = parseInt(startCell.getAttribute('rowid')); //1
+    let startrowid = parseInt(startCell.getAttribute('rowid')); //1 =>// 2
     // console.log(parseInt(startrowid))
     console.log(startrowid)
 
-    let endrowid = parseInt(endCell.getAttribute('rowid')); //4
+    let endrowid = parseInt(endCell.getAttribute('rowid')); //4  => //0
     console.log(endrowid)
     let startcolid = parseInt(startCell.getAttribute('colid')) //1
     let endcolid = parseInt(endCell.getAttribute('colid')); //3
 
-    for (let i = startrowid; i <= endrowid; i++) {
-        //access the row 
-        const Allrows = document.getElementsByClassName("rowELement")
-        const row = Allrows[i];
-        const col = row.querySelectorAll('.cell');
+    console.log(startcolid, endcolid);
 
-        for (let j = startcolid; j <= endcolid; j++) {
-            col[j].classList.add('background_highlight'); //access the cell 
-            highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
-            prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+    //remove the background color if we go in reverse selection and as soon as it removes focus from where it was previoulsy there 
+    if (prevSelectedCells) {
+        prevSelectedCells.forEach((cells) => {
+            cells.classList.remove('background_highlight');
+        });
+    }
+
+    //we will start selecting from down and go up and stretch left
+    if (startrowid > endrowid) { //if startrow is greater thn end like 7 =>2 but it goes left side and startcol is greater then end like is 4=>2
+        console.log('helo i reachedOne')
+        for (let i = startrowid; i >= endrowid; i--) {   //7=> 2
+            const Allrows = document.getElementsByClassName("rowELement")
+            const row = Allrows[i];
+            const col = row.querySelectorAll('.cell');
+
+            for (let j = startcolid; j >= endcolid; j--) { //4=>2
+                col[j].classList.add('background_highlight'); //access the cell 
+                highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+                prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+            }
+        }
+    }
+
+    //we will start selecting from down and go up and stretch right
+    if (startrowid > endrowid) { //if startrow is greater than endrow like row 7=>2 but it goes right side then j should be ++ ex 5 => 2 , //2 =>4
+        for (let i = startrowid; i >= endrowid; i--) {   //7 => 2
+            const Allrows = document.getElementsByClassName("rowELement")
+            const row = Allrows[i];
+            const col = row.querySelectorAll('.cell');
+
+            for (let j = startcolid; j <= endcolid; j++) { // 2=>4
+                col[j].classList.add('background_highlight'); //access the cell 
+                highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+                prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+            }
+        }
+    }
+    //we will start selecting from upside and go down and stretch left
+    if (startrowid < endrowid && startcolid > endcolid) { //if startrow is less than endrow and startcol > endcol means it goes below
+        for (let i = startrowid; i <= endrowid; i++) {   //3 => 8
+            const Allrows = document.getElementsByClassName("rowELement");
+            const row = Allrows[i];
+            const col = row.querySelectorAll('.cell');
+
+            for (let j = startcolid; j >= endcolid; j--) {  //5=>3
+                col[j].classList.add('background_highlight'); //access the cell 
+                highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+                prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+            }
+        }
+    }
+
+    //if startrow and endrow same hoga and apn left side me stretch krege to
+    // if (startrowid === endrowid && startcolid > endcolid) { //if startrow is less than endrow and startcol > endcol means it goes below
+    //     for (let i = startrowid; i <= endrowid; i++) {   //3 => 8
+    //         const Allrows = document.getElementsByClassName("rowELement");
+    //         const row = Allrows[i];
+    //         const col = row.querySelectorAll('.cell');
+
+    //         for (let j = startcolid; j >= endcolid; j--) {  //5=>3
+    //             col[j].classList.add('background_highlight'); //access the cell 
+    //             highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+    //             prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+    //         }
+    //     }
+    // }
+
+    //we can use this below or above seperate function for this condition => when start and end row is same but startcol is bigger than endcol means we go left side
+    else {
+        console.log('hello i reachedTwo');//startrow is less than end and also startcol is less than end ex: row 3=>9 and col 3=>5
+        for (let i = startrowid; i <= endrowid; i++) {   //0  i<=2 ;i++ , i=2; i<=0; i++
+            //access the row 
+            const Allrows = document.getElementsByClassName("rowELement")
+            const row = Allrows[i];
+            const col = row.querySelectorAll('.cell');
+
+            for (let j = startcolid; startcolid > endcolid ? j >= endcolid : j <= endcolid; startcolid > endcolid ? j-- : j++) {
+                col[j].classList.add('background_highlight'); //access the cell 
+                highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+                prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+            }
         }
     }
 }
+
+
+
+
+// for (let i = startrowid; startrowid > endrowid ? i >= endrowid : i <= endrowid; startrowid > endrowid ? i-- : i++) {   //0  i<=2 ;i++ , i=2; i<=0; i++
+//     //access the row 
+//     const Allrows = document.getElementsByClassName("rowELement")
+//     const row = Allrows[i];
+//     const col = row.querySelectorAll('.cell');
+
+//     for (let j = startcolid; startrowid > endrowid ? j >= endrowid : j <= endcolid; startrowid > endrowid ? j-- : j++) {
+//         col[j].classList.add('background_highlight'); //access the cell 
+//         highLightCorrespondinglettersandNumbers(i, j); //on every iteration loop will run and call this function wiht the current i and j value which will add bg-selected to corresponding rownumbers and letters
+//         prevSelectedCells.push(col[j])//push all the cells which need to be wiped out in next iteration
+//     }
+// }
+
 
 
 
@@ -261,6 +357,7 @@ function handlecellClick(cell, row, col, highlightrow, hightlightcolumn) {
 
 
 function setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn) {
+    console.log(cell, row, col, highlightrow, hightlightcolumn);
 
     if (prevfocusedCell) {
         console.log(prevfocusedCell)
