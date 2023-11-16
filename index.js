@@ -159,6 +159,7 @@ function addBordersToSelectedCells(startCell, endCell) {
         let startcolid = parseInt(startCell.getAttribute('colid'))
         let endcolid = parseInt(endCell.getAttribute('colid'));
 
+        //if startrow is greater than endrow we select from /we will start selecting from down and go up and stretch left
         if (startrowid > endrowid) {
             for (let i = startrowid; i >= endrowid; i--) {   //6=> 2  and col 5 => 3
                 const Allrows = document.getElementsByClassName("rowELement");
@@ -190,6 +191,7 @@ function addBordersToSelectedCells(startCell, endCell) {
             }
         }
 
+        // we will start selecting from down and go up and stretch right
         if (startrowid > endrowid) {
             for (let i = startrowid; i >= endrowid; i--) {   //6=> 2  and col 5 => 3
                 const Allrows = document.getElementsByClassName("rowELement");
@@ -224,6 +226,7 @@ function addBordersToSelectedCells(startCell, endCell) {
 
 
         //first conditiion
+        // we will start selecting from upside and go down and stretch left
         if (startrowid < endrowid && startcolid > endcolid) {
 
             //outer loop start
@@ -256,6 +259,7 @@ function addBordersToSelectedCells(startCell, endCell) {
                 }
             }
         }
+        //default conditon where we select right side start from top to bottom and go right side selecting the cells
         else {
             for (let i = startrowid; i <= endrowid; i++) {
                 //access the row 
@@ -329,7 +333,6 @@ function highlightSelectedCells(startCell, endCell) {
 
     //we will start selecting from down and go up and stretch left
     if (startrowid > endrowid) { //if startrow is greater thn end like 7 =>2 but it goes left side and startcol is greater then end like is 4=>2
-        console.log('helo i reachedOne')
         for (let i = startrowid; i >= endrowid; i--) {   //7=> 2
             const Allrows = document.getElementsByClassName("rowELement")
             const row = Allrows[i];
