@@ -26,8 +26,6 @@ let prevSelectedCells = []; // Keep track of previously selected cells
 let PrevHighlightedRowsAndColumns = []; //keep track of corresponding rows and col highlighted
 let prevselectedBorders = [];
 
-
-
 document.addEventListener('keydown', (event) => {
     handleKeyboardClick(event, currentRow, currentCol); //fucntion runs when keyboard buttons are pressed
 });
@@ -59,6 +57,7 @@ renderNumbers();  //invoke the function
 
 
 function createcell(row, col) {
+    // console.log(row , col)
     const cell = document.createElement('div');
     cell.classList.add('cell');
     cell.setAttribute("spellcheck", "false");
@@ -66,30 +65,29 @@ function createcell(row, col) {
     // Attributes for cell identification
     cell.setAttribute("rowid", row);
     cell.setAttribute("colid", col);
+    // console.log(cell);
     cell.innerText = "";
+    // console.log(cell.innerText)
 
-    // cell.addEventListener('keydown', (event) => {
-    //     handleKeyboardClick(event, row, col); //fucntion runs when keyboard buttons are pressed
-    // });
+    cell.addEventListener('click', handlecellClick);
 
-    cell.addEventListener('click', (event) => {
-        console.log('line 74', event.target)
-        const x = event.target
-        console.log(x.getAttribute('rowid'))
-        console.log(x.getAttribute('colid'))
-        currentRow = x.getAttribute('rowid')
-        currentCol = x.getAttribute('colid')
-        console.log(row, col)
-        handlecellClick(cell, row, col, true, true);
-    })
-
-    cell.addEventListener('dblclick', () => {
+    cell.addEventListener('dblclick', (e) => {
         cell.setAttribute("contenteditable", "true");
-        cell.focus()
+        cell.focus();
     });
 
     selectMultipleCells(cell);
     return cell;
+}
+
+function handlecellClick(event) {
+    console.log('line 74', event.target)
+    const targetcell = event.target
+    console.log(targetcell)
+    currentRow = targetcell.getAttribute('rowid') //rowid and colid is same as row and col which we have passed in argument 
+    currentCol = targetcell.getAttribute('colid')
+    console.log(currentRow, currentCol);
+    setFocusAndHighlight(targetcell, currentRow, currentCol, true, true);
 }
 
 
@@ -113,8 +111,6 @@ function selectMultipleCells(cell) {
             highlightSelectedCells(startCell, endCell);
         }
     });
-
-
 
     cell.addEventListener('mouseup', (e) => {
         isSelecting = false;
@@ -166,9 +162,9 @@ function addBordersToSelectedCells(startCell, endCell) {
                 const row = Allrows[i];
                 const col = row.querySelectorAll('.cell');
 
-                //inner loop start
+                //inner loop start for columns
                 for (let j = startcolid; j >= endcolid; j--) {
-                    if (i === startrowid) {
+                    if (i === startrowid) { //if i === 5 or whatever wehn i starts
                         col[j].classList.add('border-bottom');
                         prevselectedBorders.push(col[j]) ////push the element in array so that next time this can be removed
                     }
@@ -260,6 +256,7 @@ function addBordersToSelectedCells(startCell, endCell) {
             }
         }
         //default conditon where we select right side start from top to bottom and go right side selecting the cells
+        ////we can use this below or above seperate function for this condition => when start and end row is same means 8 =>8 but col is 5 => 3but startcol is bigger than endcol means we go left side or default right side
         else {
             for (let i = startrowid; i <= endrowid; i++) {
                 //access the row 
@@ -267,7 +264,7 @@ function addBordersToSelectedCells(startCell, endCell) {
                 const row = Allrows[i];
                 const col = row.querySelectorAll('.cell');
 
-                for (let j = startcolid; j <= endcolid; j++) {
+                for (let j = startcolid; startcolid > endcolid ? j >= endcolid : j <= endcolid; startcolid > endcolid ? j-- : j++) {
                     if (i === startrowid) {
                         col[j].classList.add('border-top');
                         prevselectedBorders.push(col[j]) ////push the element in array so that next time this can be removed
@@ -278,13 +275,25 @@ function addBordersToSelectedCells(startCell, endCell) {
                         prevselectedBorders.push(col[j])
                     }
 
+                    //wehn we are moving left side we will apply border to right of startcol and left of endcol 
                     if (j === startcolid) {
-                        col[j].classList.add('border-left');//push the element in array so that next time this can be removed
-                        prevselectedBorders.push(col[j])
+                        if (startcolid > endcolid) {
+                            col[j].classList.add('border-right')
+                        }
+                        else if (startcolid < endcolid) {
+                            col[j].classList.add('border-left');//push the element in array so that next time this can be removed
+                        }
+                        prevselectedBorders.push(col[j]);
                     }
 
+                    //if we are moving right side we will apply border to left of startcol and right of endcol
                     if (j === endcolid) {
-                        col[j].classList.add('border-right');//push the element in array so that next time this can be removed
+                        if (startcolid > endcolid) {
+                            col[j].classList.add('border-left')
+                        }
+                        else if (startcolid < endcolid) {
+                            col[j].classList.add('border-right');//push the element in array so that next time this can be removed
+                        }
                         prevselectedBorders.push(col[j])
                     }
                 }
@@ -392,7 +401,7 @@ function highlightSelectedCells(startCell, endCell) {
 
     //we can use this below or above seperate function for this condition => when start and end row is same but startcol is bigger than endcol means we go left side
     else {
-        console.log('hello i reachedTwo');//startrow is less than end and also startcol is less than end ex: row 3=>9 and col 3=>5
+        //startrow is less than end and also startcol is less than end ex: row 3=>9 and col 3=>5
         for (let i = startrowid; i <= endrowid; i++) {   //0  i<=2 ;i++ , i=2; i<=0; i++
             //access the row 
             const Allrows = document.getElementsByClassName("rowELement")
@@ -451,12 +460,27 @@ function highlightCorrespondingRowAndColumn(i, j) {
 
 
 // render blank cells
+// function renderGridLayout() {
+//     const fragment = document.createDocumentFragment();
+//     for (let row = 0; row < Totalrows; row++) {
+//         const rowElement = document.createElement('div');
+//         rowElement.classList.add('rowELement');
+
+//         for (let col = 0; col < Totalcols; col++) {
+//             const cell = createcell(row, col); //call create cell to create cell elements
+//             rowElement.appendChild(cell);
+//         }
+//         fragment.appendChild(rowElement)
+//     }
+//     scrollableContent.appendChild(fragment)
+// }
+
 function renderGridLayout() {
     for (let row = 0; row < Totalrows; row++) {
-
         const rowElement = document.createElement('div');
         rowElement.classList.add('rowELement');
 
+        //inner loop j runs 26times for every row i
         for (let col = 0; col < Totalcols; col++) {
             const cell = createcell(row, col); //call create cell to create cell elements
             rowElement.appendChild(cell);
@@ -467,23 +491,18 @@ function renderGridLayout() {
 
 renderGridLayout();
 
-function handlecellClick(cell, row, col, highlightrow, hightlightcolumn) {
-    setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn);
-}
 
 
 function setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn) {
     console.log(cell, row, col, highlightrow, hightlightcolumn);
-
     if (prevfocusedCell) {
         console.log(prevfocusedCell)
         prevfocusedCell.classList.remove('border');
+        prevfocusedCell.removeAttribute("contenteditable");
+        prevfocusedCell.blur() //remove focus from prev cell once next cell is clicked
         prevfocusedCell.classList.remove('background_highlight') //remove the highlight bg color when we click on different cell
     }
     cell.classList.add('border');
-    console.log(cell);
-    cell.focus();
-
 
     // code to highlisht the coresponding letters and numbers
     if (highlightrow) {
@@ -506,15 +525,23 @@ function setFocusAndHighlight(cell, row, col, highlightrow, hightlightcolumn) {
         prevHighlightedColumn = columnTohighlight
     }
     prevfocusedCell = cell;
+    console.log(prevfocusedCell)
     //added this two lines of code so that we get the updated row and col when do arrow down ,up and prev it was fetching the same global row can col which was 1 when first time clciked and fetch the correct cell based on row and col
     currentRow = cell.getAttribute('rowid');
     currentCol = cell.getAttribute('colid');
-    // console.log(`clicked on  row ${row} and col ${col}`);
 }
 
+function handleTyping(event, cell) {
+    if (event.key !== 'Enter' && event.key !== 'ArrowRight' && event.key !== 'ArrowLeft' && event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+        cell.setAttribute("contenteditable", "true");
+        cell.focus();
+        console.log(cell.innerText);
+        // if (cell.innerText.length > )
+    }
+}
 
 function handleKeyboardClick(event, row, col) {
-    console.log(row, col)
+    console.log(row, col);
     let nextcell;
     let currentRow;
     let nextrow;
@@ -522,6 +549,7 @@ function handleKeyboardClick(event, row, col) {
     switch (event.key) {
         case 'Enter':
             event.preventDefault();
+            console.log('helo from handlekeyboardclck swicth case')
             console.log(prevfocusedCell)
             currentRow = prevfocusedCell.parentElement;
             nextrow = currentRow.nextElementSibling //get the next row in which cells need to focus
@@ -529,9 +557,9 @@ function handleKeyboardClick(event, row, col) {
             if (nextrow) {
                 const cellsincurentRow = nextrow.querySelectorAll('.cell'); //get all the cells in the row 
                 if (cellsincurentRow) {
-                    const currentelementToFocus = cellsincurentRow[col] //focus on the cell
-                    console.log(currentelementToFocus)
-                    setFocusAndHighlight(currentelementToFocus, ++row, col, true, false);
+                    const currentcellToFocus = cellsincurentRow[col] //focus on the cell
+                    console.log(currentcellToFocus)
+                    setFocusAndHighlight(currentcellToFocus, ++row, col, true, false);
                 }
             }
             break;
@@ -587,7 +615,7 @@ function handleKeyboardClick(event, row, col) {
             break;
 
         default:
-            break;
+            handleTyping(event, prevfocusedCell);
     }
 }
 
